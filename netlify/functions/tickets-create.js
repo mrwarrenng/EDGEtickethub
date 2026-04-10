@@ -35,14 +35,12 @@ exports.handler = async (event) => {
   if (isMigration && body.id) {
     ticketId = body.id;
   } else {
-    const { data: seq, error: seqErr } = await db.rpc('nextval', { seq_name: 'ticket_seq' }).single();
-    if (seqErr) {
-      // Fallback: count existing tickets
-      const { count } = await db.from('tickets').select('*', { count: 'exact', head: true });
-      ticketId = 'EDGE-' + String((count || 0) + 1).padStart(3, '0');
-    } else {
-      ticketId = 'EDGE-' + String(seq).padStart(3, '0');
+    const { data: seq, error: seqErr } = await db.rpc('next_ticket_id').single();
+    if (seqErr || !seq) {
+      console.error('next_ticket_id RPC failed:', seqErr?.message);
+      return err('Failed to generate ticket ID — ensure next_ticket_id() SQL function exists in Supabase', 500);
     }
+    ticketId = seq;
   }
 
   const ticket = {
