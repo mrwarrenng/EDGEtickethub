@@ -329,7 +329,7 @@ textarea.fc{height:80px;resize:vertical;font-family:inherit;line-height:1.5}
 const API='/.netlify/functions';
 let ticketCache=[],emailCache=[];
 
-async function apiGet(path,auth=false){const h={};if(auth)h['Authorization']='Bearer '+getAdminToken();try{return await fetch(API+path,{headers:h});}catch(e){console.error('GET',path,e);throw e;}}
+async function apiGet(path,auth=false){const h={'Cache-Control':'no-cache'};if(auth)h['Authorization']='Bearer '+getAdminToken();try{return await fetch(API+path,{headers:h,cache:'no-store'});}catch(e){console.error('GET',path,e);throw e;}}
 async function apiPost(path,body,auth=false){const h={'Content-Type':'application/json'};if(auth)h['Authorization']='Bearer '+getAdminToken();try{return await fetch(API+path,{method:'POST',headers:h,body:JSON.stringify(body)});}catch(e){console.error('POST',path,e);throw e;}}
 
 function getAdminToken(){return sessionStorage.getItem('edge_admin_jwt');}
@@ -347,7 +347,7 @@ function getFT(){return parseInt(localStorage.getItem(SK.formTs)||'0');}
 function ldT(){return ticketCache;}
 function ldE(){return emailCache;}
 
-async function refreshTickets(){try{const r=await apiGet('/tickets-list');if(r.ok){const d=await r.json();ticketCache=d.tickets||[];}}catch(e){}render();}
+async function refreshTickets(){try{const r=await apiGet('/tickets-list');if(r.ok){const d=await r.json();ticketCache=d.tickets||[];}else{console.error('tickets-list returned',r.status);}}catch(e){console.error('tickets-list fetch failed:',e);}render();}
 async function refreshEmails(){if(!isAdm())return;try{const r=await apiGet('/emails-list',true);if(r.ok){const d=await r.json();emailCache=d.emails||[];}}catch(e){}}
 
 const SECTIONS={home:[{v:'hero',l:'Hero / Stats'},{v:'audience-buttons',l:'Audience Buttons'},{v:'meda-cta',l:'MEDA CTA'},{v:'general',l:'General'}],why:[{v:'rankings',l:'Rankings'},{v:'ei-dashboard',l:'EI Dashboard'},{v:'ei-overview',l:'EI: Overview'},{v:'ei-labor',l:'EI: Labor'},{v:'ei-industry',l:'EI: Industry'},{v:'ei-housing',l:'EI: Housing'},{v:'ei-banking',l:'EI: Banking'},{v:'ei-demographics',l:'EI: Demographics'},{v:'quality-of-life',l:'Quality of Life'},{v:'workforce-development',l:'Workforce'},{v:'target-sectors',l:'Target Sectors'},{v:'employers',l:'Employers'},{v:'general',l:'General'}],start:[{v:'business-checklist',l:'Launch Checklist'},{v:'funding-resources',l:'Funding'},{v:'startup-ecosystem',l:'Ecosystem'},{v:'workforce-hiring',l:'Hiring'},{v:'launch-wizard',l:'Launch Wizard'},{v:'general',l:'General'}],grow:[{v:'incentive-finder',l:'Incentive Finder'},{v:'incentive-data',l:'Incentive Data'},{v:'workforce-grow',l:'Workforce'},{v:'nomination-form',l:'Spotlight Nomination'},{v:'grow-cta',l:'CTA'},{v:'general',l:'General'}],sites:[{v:'sites-map',l:'Sites Map'},{v:'cost-calculator',l:'Cost Calc'},{v:'zoning-lookup',l:'Zoning'},{v:'fee-estimator',l:'Fee Estimator'},{v:'incentives-sites',l:'Incentives'},{v:'general',l:'General'}],contact:[{v:'contact-journey',l:'Journey Triage'},{v:'contact-form',l:'Form'},{v:'contact-info',l:'Info'},{v:'booking-link',l:'Bookings'},{v:'general',l:'General'}],global:[{v:'navigation',l:'Nav'},{v:'footer',l:'Footer'},{v:'fonts-colors',l:'Branding'},{v:'responsive',l:'Responsive'},{v:'performance',l:'Performance'},{v:'accessibility',l:'WCAG'},{v:'seo',l:'SEO'},{v:'nps-survey',l:'NPS'},{v:'general',l:'General'}],meda:[{v:'meda-chat',l:'Chat UI'},{v:'meda-responses',l:'Responses'},{v:'meda-routing',l:'Routing'},{v:'meda-contact-prepop',l:'Pre-pop'},{v:'meda-api',l:'API'},{v:'general',l:'General'}]};
