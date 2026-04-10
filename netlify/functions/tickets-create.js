@@ -71,9 +71,15 @@ exports.handler = async (event) => {
     : await db.from('tickets').insert(ticket).select().single();
 
   if (error) {
+    console.error('DB error:', error.code, error.message);
     if (error.code === '23505') return err('Ticket already exists', 409);
-    return err(error.message, 500);
+    return err(error.message || 'Database error', 500);
   }
 
-  return ok({ ticket: data || ticket }, 201);
+  if (!data) {
+    console.error('Insert returned no data — possible RLS or key misconfiguration');
+    return err('Ticket could not be saved — check SUPABASE_SERVICE_ROLE_KEY and RLS policies', 500);
+  }
+
+  return ok({ ticket: data }, 201);
 };
