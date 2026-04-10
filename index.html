@@ -458,6 +458,7 @@ document.addEventListener('DOMContentLoaded',async function(){
   await refreshTickets();
   updateUI();
   if(!localStorage.getItem(SK.guideSeen))openGuide();
+  setInterval(refreshTickets,30000);
   setInterval(function(){const b=document.querySelector('.tb-icon');if(b&&!document.getElementById('guide-modal').classList.contains('open')){b.classList.add('pulse');setTimeout(()=>b.classList.remove('pulse'),800);}},5000);
   let _tc=0,_tt=0;const fl=document.getElementById('footer-logo');if(fl)fl.addEventListener('click',function(){const now=Date.now();if(now-_tt>600){_tc=0;}_tc++;_tt=now;if(_tc>=3){_tc=0;openAdminModal();}});
 });
