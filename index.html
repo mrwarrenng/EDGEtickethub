@@ -110,7 +110,7 @@ textarea.fc{height:80px;resize:vertical;font-family:inherit;line-height:1.5}
 .pills{display:flex;gap:0.4rem;flex-wrap:wrap}
 .pill{padding:0.42rem 0.85rem;border-radius:7px;cursor:pointer;font-size:0.75rem;font-weight:600;transition:all 0.2s;border:2px solid transparent;display:flex;align-items:center;gap:0.3rem;font-family:'Montserrat',sans-serif}
 .pills{display:flex;gap:0.4rem;flex-wrap:wrap}
-#tip{position:fixed;z-index:9999;padding:0.5rem 0.7rem;background:var(--navy-mid);border:1px solid rgba(0,163,181,0.25);border-radius:7px;font-size:0.66rem;font-weight:400;line-height:1.55;color:rgba(248,245,240,0.75);box-shadow:0 8px 28px rgba(0,0,0,0.4);pointer-events:none;max-width:240px;opacity:0;transition:opacity 0.15s;font-family:'Montserrat',sans-serif}
+#tip{position:fixed;z-index:9999;padding:0.5rem 0.7rem;background:var(--navy-mid);border:1px solid rgba(0,163,181,0.25);border-radius:7px;font-size:0.66rem;font-weight:400;line-height:1.55;color:rgba(248,245,240,0.75);box-shadow:0 8px 28px rgba(0,0,0,0.4);pointer-events:none;max-width:min(240px,calc(100vw - 16px));opacity:0;transition:opacity 0.15s;font-family:'Montserrat',sans-serif}
 #tip.on{opacity:1}
 #tip strong{color:var(--teal-lt);font-weight:600}
 .pill.bug{background:var(--bug-bg);color:var(--bug);border-color:rgba(232,93,93,0.2)}.pill.bug.sel{border-color:var(--bug);box-shadow:0 0 16px rgba(232,93,93,0.12)}
@@ -390,7 +390,7 @@ function toggleChip(el,f){if(filters.has(f))filters.delete(f);else filters.add(f
 function selType(t){fType=t;document.querySelectorAll('.pill').forEach(p=>p.classList.remove('sel'));document.querySelector('.pill.'+t).classList.add('sel');}
 const tipData={bug:'<strong>Bug Report</strong> — Something is broken or not working as expected. Wrong calculations, rendering errors, or incorrect behavior.',feature:'<strong>Feature Request</strong> — A new capability or enhancement that doesn\'t exist yet. Workflow improvements or added functionality.',content:'<strong>Content Improvement</strong> — Text, data, or media that needs updating. Outdated stats, incorrect descriptions, or missing info.'};
 function tipOn(e,t){const el=document.getElementById('tip');el.innerHTML=tipData[t]||'';el.classList.add('on');tipMv(e);}
-function tipMv(e){const el=document.getElementById('tip');let x=e.clientX+12,y=e.clientY-el.offsetHeight-8;if(y<8)y=e.clientY+16;if(x+250>window.innerWidth)x=e.clientX-el.offsetWidth-12;el.style.left=x+'px';el.style.top=y+'px';}
+function tipMv(e){const el=document.getElementById('tip');const w=el.offsetWidth,h=el.offsetHeight,vw=window.innerWidth,vh=window.innerHeight,m=8;let x=e.clientX+12,y=e.clientY-h-m;if(y<m)y=e.clientY+16;if(x+w+m>vw)x=vw-w-m;if(x<m)x=m;if(y+h+m>vh)y=vh-h-m;if(y<m)y=m;el.style.left=x+'px';el.style.top=y+'px';}
 function tipOff(){document.getElementById('tip').classList.remove('on');}
 function selSev(el,s){fSev=s;document.querySelectorAll('.sev').forEach(p=>p.classList.remove('sel'));el.classList.add('sel');}
 function updSec(){const p=document.getElementById('f-page').value,s=document.getElementById('f-sec');s.innerHTML='<option value="">Select...</option>';if(p&&SECTIONS[p])SECTIONS[p].forEach(x=>{s.innerHTML+='<option value="'+x.v+'">'+x.l+'</option>';});}
